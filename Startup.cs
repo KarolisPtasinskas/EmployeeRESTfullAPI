@@ -1,6 +1,10 @@
 using EmployeeRestAPI.Data;
+using EmployeeRestAPI.Entities;
 using EmployeeRestAPI.Repositories;
 using EmployeeRestAPI.Services;
+using EmployeeRestAPI.Validation;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -33,10 +37,19 @@ namespace EmployeeRestAPI
             services.AddTransient<EmployeeService>();
             services.AddTransient<CompanyService>();
 
+
             //AutoMapper
             services.AddAutoMapper(typeof(Startup));
 
-            services.AddControllers();
+            services.AddControllers().AddFluentValidation(fv =>
+            {
+                ////
+                // Not sure which line is best.
+                ////
+                //fv.RunDefaultMvcValidationAfterFluentValidationExecutes = false; 
+                fv.DisableDataAnnotationsValidation = true;
+                fv.RegisterValidatorsFromAssemblyContaining<Startup>();
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "EmployeeRestAPI", Version = "v1" });
